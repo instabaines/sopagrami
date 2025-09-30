@@ -27,7 +27,7 @@ cmake --build sopagrami -j
 ## CLI
 
 ```bash
-./sopagrami/run <graph.lg> [tau] [directed] [sorted] [threads]
+./sopagrami/run <graph.lg> [tau] [directed] [sorted] [threads] [out_dir]
 ```
 
 | Arg        | Meaning                           | Type | Allowed             | Default |
@@ -36,6 +36,7 @@ cmake --build sopagrami -j
 | `directed` | Treat graph as directed?          | int  | `1` = yes, `0` = no | `0`     |
 | `sorted`   | SoGraMi seed ordering             | int  | `1` = on, `0` = off | `1`     |
 | `threads`  | Number of worker threads (OpenMP) | int  | ≥ 0                 | `4`     |
+| `out_dir1` | Directory to save outputs         | str  |                     |         |
 
 Notes
 

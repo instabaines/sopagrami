@@ -1,9 +1,78 @@
 #include "alg.hpp"
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <filesystem>
 
 using namespace algo;
+namespace fs = std::filesystem;
 
+static std::string sanitize_dot(const std::string& s){
+    std::string t; t.reserve(s.size()*2);
+    for (char c: s){
+        if (c=='"' || c=='\\') t.push_back('\\');
+        t.push_back(c);
+    }
+    return t;
+}
+
+static void write_pattern_as_lg(const algo::Pattern& P, const std::string& path){
+    std::ofstream out(path);
+    if (!out) return;
+    for (size_t i=0;i<P.vlab.size();++i) out << "v " << i << " " << P.vlab[i] << "\n";
+    for (const auto& e : P.pedges)       out << "e " << e.a << " " << e.b << " " << e.el << "\n";
+}
+
+static void write_pattern_as_dot(const algo::Pattern& P, bool directed, const std::string& path){
+    std::ofstream out(path);
+    if (!out) return;
+    out << (directed ? "digraph G {\n" : "graph G {\n");
+    // nodes
+    for (size_t i=0;i<P.vlab.size();++i){
+        out << "  " << i << " [shape=circle,label=\"" << sanitize_dot(P.vlab[i]) << "\"];\n";
+    }
+    // edges
+    for (const auto& e : P.pedges){
+        const bool use_arrow = directed || e.dir==1;
+        out << "  " << e.a << (use_arrow ? " -> " : " -- ") << e.b
+            << " [label=\"" << sanitize_dot(e.el) << "\"];\n";
+    }
+    out << "}\n";
+}
+
+// ---- Dump for static miner output ----
+static void dump_patterns_to_dir(const algo::Output& out,
+                                 const std::string& dir,
+                                 bool directed)
+{
+    fs::create_directories(dir);
+    std::ofstream idx(dir + "/index.tsv");
+    idx << "id\tk\tm\tfull_support\tkey\tlg_path\tdot_path\n";
+
+    for (size_t i=0; i<out.frequent_patterns.size(); ++i){
+        const auto& f = out.frequent_patterns[i];
+        const size_t k = f.pat.vlab.size();
+        const size_t m = f.pat.pedges.size();
+
+        std::string base = dir + "/pat_" + std::to_string(i)
+                         + "_k" + std::to_string(k)
+                         + "_e" + std::to_string(m)
+                         + "_full" + std::to_string(f.full_support);
+        std::string lgp  = base + ".lg";
+        std::string dotp = base + ".dot";
+
+        write_pattern_as_lg (f.pat, lgp);
+        write_pattern_as_dot(f.pat, directed, dotp);
+
+        idx << i << '\t' << k << '\t' << m << '\t'
+            << f.full_support << '\t' << f.pat.key()
+            << '\t' << lgp << '\t' << dotp << "\n";
+    }
+}
 int main(int argc, char** argv){
     // Usage:
     //   run <graph.lg> [tau] [directed(0/1)] [sorted(0/1)] [threads]
@@ -56,5 +125,12 @@ int main(int argc, char** argv){
                   << " full=" << f.full_support
                   << " key=" << f.pat.key() << "\n";
     }
+    //dump patterns to dir
+    std::string dump_dir = (argc > 6 ? argv[6] : "");
+    if (!dump_dir.empty()){
+        dump_patterns_to_dir(out, dump_dir, p.directed);
+        std::cout << "Wrote pattern files to: " << dump_dir << "/ (index.tsv, .lg, .dot)\n";
+    }
+
     return 0;
 }
