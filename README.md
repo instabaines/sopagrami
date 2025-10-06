@@ -65,3 +65,18 @@ Notes
 ```
 ./sopagrami/run data/graph.lg 5 1 0 1
 ```
+5. Undirected, sorted, 8 thread, save output in results
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/
+
+```
+6. Undirected, sorted, 8 thread, save output in results Dump image CSVs with up to 100 IDs per pattern vertex:
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/ 1 100
+
+```
+7. Undirected, sorted, 8 thread, save output in results, dump embeddings with a limit of 25 rows:
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/ 1 100 1 25
+
+```
