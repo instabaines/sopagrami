@@ -27,7 +27,7 @@ cmake --build sopagrami -j
 ## CLI
 
 ```bash
-./sopagrami/run <graph.lg> [tau] [directed] [sorted] [threads]
+./sopagrami/run <graph.lg> [tau] [directed] [sorted] [threads] [out_dir]
 ```
 
 | Arg        | Meaning                           | Type | Allowed             | Default |
@@ -36,6 +36,7 @@ cmake --build sopagrami -j
 | `directed` | Treat graph as directed?          | int  | `1` = yes, `0` = no | `0`     |
 | `sorted`   | SoGraMi seed ordering             | int  | `1` = on, `0` = off | `1`     |
 | `threads`  | Number of worker threads (OpenMP) | int  | ≥ 0                 | `4`     |
+| `out_dir1` | Directory to save outputs         | str  |                     |         |
 
 Notes
 
@@ -63,4 +64,19 @@ Notes
 4.  Directed, no sorting, single thread
 ```
 ./sopagrami/run data/graph.lg 5 1 0 1
+```
+5. Undirected, sorted, 8 thread, save output in results
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/
+
+```
+6. Undirected, sorted, 8 thread, save output in results Dump image CSVs with up to 100 IDs per pattern vertex:
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/ 1 100
+
+```
+7. Undirected, sorted, 8 thread, save output in results, dump embeddings with a limit of 25 rows:
+```
+./sopagrami/run data/graph.lg 10 0 1 8 results/ 1 100 1 25
+
 ```
