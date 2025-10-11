@@ -1,0 +1,18 @@
+[build-system]
+requires = ["scikit-build-core>=0.8", "pybind11>=2.11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "sopagrami"
+version = "0.1.0"
+requires-python = ">=3.8"
+description = "SoPaGraMi miner"
+
+[tool.scikit-build]
+# tell scikit-build where the Python package lives
+wheel.packages = ["src/sopagrami"]
+cmake.verbose = true
+
+
+[tool.scikit-build.cmake.define]
+SOPAGRAMI_BUILD_PYTHON = "ON"
